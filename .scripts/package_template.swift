@@ -5,7 +5,7 @@ import PackageDescription
 
 let package = Package(
   name: "Firebase",
-  platforms: [.iOS(.v11), .macOS(.v10_12), .tvOS(.v12), .watchOS(.v7)],
+  platforms: [.iOS(.v15)],
   products: [
 // GENERATE LIBRARIES
   ],

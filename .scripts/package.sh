@@ -260,6 +260,69 @@ generate_swift_package () {
     template_replace $package "// GENERATE BINARIES" $binaries; rm -f $binaries
 }
 
+filter_modules () {
+    # 필요한 모듈만 남기고 나머지 삭제
+    if [ ${#REQUIRED_MODULES[@]} -eq 0 ]; then
+        echo "No module filter specified, keeping all modules"
+        return
+    fi
+
+    echo "Filtering to required modules only..."
+    for dir in */; do
+        dir_name="${dir%/}"
+        local keep=false
+        for module in "${REQUIRED_MODULES[@]}"; do
+            if [ "$dir_name" = "$module" ]; then
+                keep=true
+                break
+            fi
+        done
+        if [ "$keep" = false ]; then
+            echo "  Removing: $dir_name"
+            rm -rf "$dir"
+        else
+            echo "  Keeping: $dir_name"
+        fi
+    done
+}
+
+remove_non_ios_platforms () {
+    # iOS만 남기기 (tvOS, macOS, watchOS, catalyst 제거)
+    if [ "$IOS_ONLY" != "true" ]; then
+        return
+    fi
+
+    echo "Removing non-iOS platforms..."
+    for framework in */*.xcframework; do
+        echo "  Processing $framework..."
+
+        # tvOS, macOS, watchOS, maccatalyst 폴더 삭제
+        rm -rf "$framework/tvos-"* 2>/dev/null || true
+        rm -rf "$framework/macos-"* 2>/dev/null || true
+        rm -rf "$framework/watchos-"* 2>/dev/null || true
+        rm -rf "$framework/"*-maccatalyst 2>/dev/null || true
+
+        # Info.plist 수정 (iOS만 남기기, maccatalyst 제외)
+        plist="$framework/Info.plist"
+        if [ -f "$plist" ]; then
+            plutil -convert json -o "$plist.json" "$plist"
+            python3 -c "
+import json
+with open('$plist.json') as f:
+    data = json.load(f)
+data['AvailableLibraries'] = [
+    lib for lib in data.get('AvailableLibraries', [])
+    if lib.get('SupportedPlatform') == 'ios' and lib.get('SupportedPlatformVariant') != 'maccatalyst'
+]
+with open('$plist.filtered.json', 'w') as f:
+    json.dump(data, f)
+"
+            plutil -convert xml1 -o "$plist" "$plist.filtered.json"
+            rm -f "$plist.json" "$plist.filtered.json"
+        fi
+    done
+}
+
 find_and_extract_firebase_zip() {
     echo "Looking for downloaded Firebase zip..."
     
@@ -312,9 +375,28 @@ commit_changes() {
 set -e
 set -o pipefail
 
+# ===========================================
+# Custom Configuration (수정 가능)
+# ===========================================
+
+# 필요한 모듈만 지정 (빈 배열이면 전체 포함)
+REQUIRED_MODULES=(
+    "FirebaseAnalytics"
+    "FirebaseCrashlytics"
+    "FirebaseMessaging"
+    "FirebasePerformance"
+    "FirebaseAppCheck"
+    "FirebaseRemoteConfig"
+)
+
+# iOS만 남기기 (true/false)
+IOS_ONLY=true
+
+# ===========================================
+
 # Repos
 firebase_repo="https://github.com/firebase/firebase-ios-sdk"
-xcframeworks_repo="https://github.com/akaffenberger/firebase-ios-sdk-xcframeworks"
+xcframeworks_repo="https://github.com/prnd-ios/firebase-ios-sdk-xcframeworks"
 
 # Release versions
 latest=$(latest_release_number $firebase_repo)
@@ -342,6 +424,8 @@ if [[ $latest != $current || $debug ]]; then
         find_and_extract_firebase_zip
         echo "Preparing xcframeworks for distribution..."
         cd Firebase
+        filter_modules
+        remove_non_ios_platforms
         rename_frameworks "_"
         zip_frameworks
         echo "Creating distribution files..."
