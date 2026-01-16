@@ -320,6 +320,22 @@ with open('$plist.filtered.json', 'w') as f:
             plutil -convert xml1 -o "$plist" "$plist.filtered.json"
             rm -f "$plist.json" "$plist.filtered.json"
         fi
+
+        # iOS는 코드 서명이 필요없음 - 서명 관련 파일 완전 제거
+        # (수정된 xcframework에 기존 서명이 남아있으면 Xcode 15+에서 검증 실패)
+        for platform_dir in "$framework"/*/; do
+            if [ -d "$platform_dir" ]; then
+                for inner_framework in "$platform_dir"*.framework; do
+                    if [ -d "$inner_framework" ]; then
+                        # _CodeSignature 폴더 제거
+                        rm -rf "$inner_framework/_CodeSignature" 2>/dev/null || true
+                        # 서명 제거 (embedded signature in binary)
+                        codesign --remove-signature "$inner_framework" 2>/dev/null || true
+                        echo "    Removed signature: $inner_framework"
+                    fi
+                done
+            fi
+        done
     done
 }
 
