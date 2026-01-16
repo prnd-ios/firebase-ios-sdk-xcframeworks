@@ -260,6 +260,82 @@ generate_swift_package () {
     template_replace $package "// GENERATE BINARIES" $binaries; rm -f $binaries
 }
 
+filter_modules () {
+    # 필요한 모듈만 남기고 나머지 삭제
+    if [ -z "$REQUIRED_MODULES" ]; then
+        echo "No module filter specified, keeping all modules"
+        return
+    fi
+
+    echo "Filtering to required modules only..."
+    for dir in */; do
+        dir_name="${dir%/}"
+        keep=false
+        for module in $REQUIRED_MODULES; do
+            if [ "$dir_name" = "$module" ]; then
+                keep=true
+                break
+            fi
+        done
+        if [ "$keep" = false ]; then
+            echo "  Removing: $dir_name"
+            rm -rf "$dir"
+        else
+            echo "  Keeping: $dir_name"
+        fi
+    done
+}
+
+remove_non_ios_platforms () {
+    # iOS만 남기기 (tvOS, macOS, watchOS, catalyst 제거)
+    if [ "$IOS_ONLY" != "true" ]; then
+        return
+    fi
+
+    echo "Removing non-iOS platforms..."
+    for framework in */*.xcframework; do
+        echo "  Processing $framework..."
+
+        # tvOS, macOS, watchOS, maccatalyst 폴더 삭제
+        rm -rf "$framework/tvos-"* 2>/dev/null || true
+        rm -rf "$framework/macos-"* 2>/dev/null || true
+        rm -rf "$framework/watchos-"* 2>/dev/null || true
+        rm -rf "$framework/"*-maccatalyst 2>/dev/null || true
+
+        # Info.plist 수정 (iOS만 남기기, maccatalyst 제외)
+        plist="$framework/Info.plist"
+        if [ -f "$plist" ]; then
+            plutil -convert json -o "$plist.json" "$plist"
+            python3 -c "
+import json
+with open('$plist.json') as f:
+    data = json.load(f)
+data['AvailableLibraries'] = [
+    lib for lib in data.get('AvailableLibraries', [])
+    if lib.get('SupportedPlatform') == 'ios' and lib.get('SupportedPlatformVariant') != 'maccatalyst'
+]
+with open('$plist.filtered.json', 'w') as f:
+    json.dump(data, f)
+"
+            plutil -convert xml1 -o "$plist" "$plist.filtered.json"
+            rm -f "$plist.json" "$plist.filtered.json"
+        fi
+
+        # iOS는 코드 서명이 필요없음 - 서명 관련 파일 완전 제거
+        for platform_dir in "$framework"/*/; do
+            if [ -d "$platform_dir" ]; then
+                for inner_framework in "$platform_dir"*.framework; do
+                    if [ -d "$inner_framework" ]; then
+                        rm -rf "$inner_framework/_CodeSignature" 2>/dev/null || true
+                        codesign --remove-signature "$inner_framework" 2>/dev/null || true
+                        echo "    Removed signature: $inner_framework"
+                    fi
+                done
+            fi
+        done
+    done
+}
+
 find_and_extract_firebase_zip() {
     echo "Looking for downloaded Firebase zip..."
     
@@ -301,20 +377,30 @@ find_and_extract_firebase_zip() {
 
 commit_changes() {
     branch=$1
+    git fetch origin master:master || true
     git checkout -b $branch
     git add .
     git commit -m"Updated Package.swift and sources for latest firebase sdks - ${branch#release/}"
     git push -u origin $branch
-    gh pr create --fill
+    gh pr create --title "Release ${branch#release/}" --body "Updated Package.swift and sources for Firebase ${branch#release/}" --base master
 }
 
 # Exit when any command fails
 set -e
 set -o pipefail
 
+# ===========================================
+# Custom Configuration
+# ===========================================
+# Space-separated list of modules to include (empty = all)
+export REQUIRED_MODULES="FirebaseAnalytics FirebaseCrashlytics FirebaseMessaging FirebasePerformance FirebaseAppCheck FirebaseRemoteConfig"
+# iOS only (true/false)
+export IOS_ONLY=false
+# ===========================================
+
 # Repos
 firebase_repo="https://github.com/firebase/firebase-ios-sdk"
-xcframeworks_repo="https://github.com/akaffenberger/firebase-ios-sdk-xcframeworks"
+xcframeworks_repo="https://github.com/prnd-ios/firebase-ios-sdk-xcframeworks"
 
 # Release versions
 latest=$(latest_release_number $firebase_repo)
@@ -342,6 +428,8 @@ if [[ $latest != $current || $debug ]]; then
         find_and_extract_firebase_zip
         echo "Preparing xcframeworks for distribution..."
         cd Firebase
+        filter_modules
+        remove_non_ios_platforms
         rename_frameworks "_"
         zip_frameworks
         echo "Creating distribution files..."
@@ -351,12 +439,12 @@ if [[ $latest != $current || $debug ]]; then
         # Create test package using local binaries and make sure it builds
         generate_swift_package "../$package" "$home/package_template.swift" "../$distribution" $xcframeworks_repo $distribution
         echo "Validating..."
-        (cd ..; swift package dump-package | read pac)
+        (cd ..; swift package dump-package > /dev/null)
         (cd ..; swift build) # TODO: create tests and replace this line with `(cd ..; swift test)`
         # Create release package using remote binaries and make sure the Package.swift file is parseable
         generate_swift_package "../$package" "$home/package_template.swift" "../$distribution" $xcframeworks_repo ''
         echo "Validating..."
-        (cd ..; swift package dump-package | read pac)
+        (cd ..; swift package dump-package > /dev/null)
     )
 
     echo "Moving files to repo..."; cd ..
