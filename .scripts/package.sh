@@ -262,7 +262,7 @@ generate_swift_package () {
 
 filter_modules () {
     # 필요한 모듈만 남기고 나머지 삭제
-    if [ ${#REQUIRED_MODULES[@]} -eq 0 ]; then
+    if [ -z "$REQUIRED_MODULES" ]; then
         echo "No module filter specified, keeping all modules"
         return
     fi
@@ -270,8 +270,8 @@ filter_modules () {
     echo "Filtering to required modules only..."
     for dir in */; do
         dir_name="${dir%/}"
-        local keep=false
-        for module in "${REQUIRED_MODULES[@]}"; do
+        keep=false
+        for module in $REQUIRED_MODULES; do
             if [ "$dir_name" = "$module" ]; then
                 keep=true
                 break
@@ -322,14 +322,11 @@ with open('$plist.filtered.json', 'w') as f:
         fi
 
         # iOS는 코드 서명이 필요없음 - 서명 관련 파일 완전 제거
-        # (수정된 xcframework에 기존 서명이 남아있으면 Xcode 15+에서 검증 실패)
         for platform_dir in "$framework"/*/; do
             if [ -d "$platform_dir" ]; then
                 for inner_framework in "$platform_dir"*.framework; do
                     if [ -d "$inner_framework" ]; then
-                        # _CodeSignature 폴더 제거
                         rm -rf "$inner_framework/_CodeSignature" 2>/dev/null || true
-                        # 서명 제거 (embedded signature in binary)
                         codesign --remove-signature "$inner_framework" 2>/dev/null || true
                         echo "    Removed signature: $inner_framework"
                     fi
@@ -393,22 +390,12 @@ set -e
 set -o pipefail
 
 # ===========================================
-# Custom Configuration (수정 가능)
+# Custom Configuration
 # ===========================================
-
-# 필요한 모듈만 지정 (빈 배열이면 전체 포함)
-REQUIRED_MODULES=(
-    "FirebaseAnalytics"
-    "FirebaseCrashlytics"
-    "FirebaseMessaging"
-    "FirebasePerformance"
-    "FirebaseAppCheck"
-    "FirebaseRemoteConfig"
-)
-
-# iOS만 남기기 (true/false)
-IOS_ONLY=true
-
+# Space-separated list of modules to include (empty = all)
+export REQUIRED_MODULES="FirebaseAnalytics FirebaseCrashlytics FirebaseMessaging FirebasePerformance FirebaseAppCheck FirebaseRemoteConfig"
+# iOS only (true/false)
+export IOS_ONLY=true
 # ===========================================
 
 # Repos
