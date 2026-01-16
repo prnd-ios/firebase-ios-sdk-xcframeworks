@@ -395,7 +395,7 @@ set -o pipefail
 # Space-separated list of modules to include (empty = all)
 export REQUIRED_MODULES="FirebaseAnalytics FirebaseCrashlytics FirebaseMessaging FirebasePerformance FirebaseAppCheck FirebaseRemoteConfig"
 # iOS only (true/false)
-export IOS_ONLY=true
+export IOS_ONLY=false
 # ===========================================
 
 # Repos
