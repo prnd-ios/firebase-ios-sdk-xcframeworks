@@ -43,16 +43,16 @@ let package = Package(
       name: "FirebaseAnalyticsTarget",
       dependencies: [
         "Firebase",
-        .target(name: "_FBLPromises", condition: .when(platforms: [.iOS])),
-        .target(name: "_FirebaseAnalytics", condition: .when(platforms: [.iOS])),
-        .target(name: "_FirebaseCore", condition: .when(platforms: [.iOS])),
-        .target(name: "_FirebaseCoreInternal", condition: .when(platforms: [.iOS])),
-        .target(name: "_FirebaseInstallations", condition: .when(platforms: [.iOS])),
+        "_FBLPromises",
+        "_FirebaseAnalytics",
+        "_FirebaseCore",
+        "_FirebaseCoreInternal",
+        "_FirebaseInstallations",
         .target(name: "_GoogleAdsOnDeviceConversion", condition: .when(platforms: [.iOS])),
-        .target(name: "_GoogleAppMeasurement", condition: .when(platforms: [.iOS])),
-        .target(name: "_GoogleAppMeasurementIdentitySupport", condition: .when(platforms: [.iOS])),
-        .target(name: "_GoogleUtilities", condition: .when(platforms: [.iOS])),
-        .target(name: "_nanopb", condition: .when(platforms: [.iOS]))
+        "_GoogleAppMeasurement",
+        "_GoogleAppMeasurementIdentitySupport",
+        "_GoogleUtilities",
+        "_nanopb"
       ],
       path: "Sources/FirebaseAnalytics"
     ),
@@ -61,9 +61,9 @@ let package = Package(
       dependencies: [
         "Firebase",
         "FirebaseAnalyticsTarget",
-        .target(name: "_AppCheckCore", condition: .when(platforms: [.iOS])),
-        .target(name: "_FirebaseAppCheck", condition: .when(platforms: [.iOS])),
-        .target(name: "_FirebaseAppCheckInterop", condition: .when(platforms: [.iOS]))
+        "_AppCheckCore",
+        "_FirebaseAppCheck",
+        "_FirebaseAppCheckInterop"
       ],
       path: "Sources/FirebaseAppCheck"
     ),
@@ -72,12 +72,12 @@ let package = Package(
       dependencies: [
         "Firebase",
         "FirebaseAnalyticsTarget",
-        .target(name: "_FirebaseCoreExtension", condition: .when(platforms: [.iOS])),
-        .target(name: "_FirebaseCrashlytics", condition: .when(platforms: [.iOS])),
-        .target(name: "_FirebaseRemoteConfigInterop", condition: .when(platforms: [.iOS])),
-        .target(name: "_FirebaseSessions", condition: .when(platforms: [.iOS])),
-        .target(name: "_GoogleDataTransport", condition: .when(platforms: [.iOS])),
-        .target(name: "_Promises", condition: .when(platforms: [.iOS]))
+        "_FirebaseCoreExtension",
+        "_FirebaseCrashlytics",
+        "_FirebaseRemoteConfigInterop",
+        "_FirebaseSessions",
+        "_GoogleDataTransport",
+        "_Promises"
       ],
       path: "Sources/FirebaseCrashlytics",
       exclude: [
@@ -90,8 +90,8 @@ let package = Package(
       dependencies: [
         "Firebase",
         "FirebaseAnalyticsTarget",
-        .target(name: "_FirebaseMessaging", condition: .when(platforms: [.iOS])),
-        .target(name: "_GoogleDataTransport", condition: .when(platforms: [.iOS]))
+        "_FirebaseMessaging",
+        "_GoogleDataTransport"
       ],
       path: "Sources/FirebaseMessaging"
     ),
@@ -100,15 +100,15 @@ let package = Package(
       dependencies: [
         "Firebase",
         "FirebaseAnalyticsTarget",
-        .target(name: "_FirebaseABTesting", condition: .when(platforms: [.iOS])),
-        .target(name: "_FirebaseCoreExtension", condition: .when(platforms: [.iOS])),
-        .target(name: "_FirebasePerformance", condition: .when(platforms: [.iOS])),
-        .target(name: "_FirebaseRemoteConfig", condition: .when(platforms: [.iOS])),
-        .target(name: "_FirebaseRemoteConfigInterop", condition: .when(platforms: [.iOS])),
-        .target(name: "_FirebaseSessions", condition: .when(platforms: [.iOS])),
-        .target(name: "_FirebaseSharedSwift", condition: .when(platforms: [.iOS])),
-        .target(name: "_GoogleDataTransport", condition: .when(platforms: [.iOS])),
-        .target(name: "_Promises", condition: .when(platforms: [.iOS]))
+        "_FirebaseABTesting",
+        "_FirebaseCoreExtension",
+        .target(name: "_FirebasePerformance", condition: .when(platforms: [.iOS, .tvOS])),
+        "_FirebaseRemoteConfig",
+        "_FirebaseRemoteConfigInterop",
+        "_FirebaseSessions",
+        "_FirebaseSharedSwift",
+        "_GoogleDataTransport",
+        "_Promises"
       ],
       path: "Sources/FirebasePerformance"
     ),
@@ -117,132 +117,132 @@ let package = Package(
       dependencies: [
         "Firebase",
         "FirebaseAnalyticsTarget",
-        .target(name: "_FirebaseABTesting", condition: .when(platforms: [.iOS])),
-        .target(name: "_FirebaseRemoteConfig", condition: .when(platforms: [.iOS])),
-        .target(name: "_FirebaseRemoteConfigInterop", condition: .when(platforms: [.iOS])),
-        .target(name: "_FirebaseSharedSwift", condition: .when(platforms: [.iOS]))
+        "_FirebaseABTesting",
+        "_FirebaseRemoteConfig",
+        "_FirebaseRemoteConfigInterop",
+        "_FirebaseSharedSwift"
       ],
       path: "Sources/FirebaseRemoteConfig"
     ),
     .binaryTarget(
       name: "_AppCheckCore",
       url: "https://github.com/prnd-ios/firebase-ios-sdk-xcframeworks/releases/download/12.8.0/_AppCheckCore.xcframework.zip",
-      checksum: "9946e2c5cfc3ac13cee0f6a62cefdbe0fc077c8702d91678908b412a5d69d079"
+      checksum: "5bca2744e52671404cbbab9d1b00ccb26c5ba0413301fea4c457c4b962e33a67"
     ),
     .binaryTarget(
       name: "_FBLPromises",
       url: "https://github.com/prnd-ios/firebase-ios-sdk-xcframeworks/releases/download/12.8.0/_FBLPromises.xcframework.zip",
-      checksum: "164a296b2dc67b053a337c430144ec70af4d71a3ad1ddbeefd6d5e754674ddd1"
+      checksum: "7496009d42763f0433e4fa28d7353881b908f15441f81aa04b014e828393aef8"
     ),
     .binaryTarget(
       name: "_FirebaseABTesting",
       url: "https://github.com/prnd-ios/firebase-ios-sdk-xcframeworks/releases/download/12.8.0/_FirebaseABTesting.xcframework.zip",
-      checksum: "e0d66e73d3684e01ac0b8fbc7187f2edec6831a5ac49235aeec5124c34b6d5ac"
+      checksum: "8ceb2cae7ad8015b0b90ba698d3e5547dc2211c174deac23470a683b3e1bff16"
     ),
     .binaryTarget(
       name: "_FirebaseAnalytics",
       url: "https://github.com/prnd-ios/firebase-ios-sdk-xcframeworks/releases/download/12.8.0/_FirebaseAnalytics.xcframework.zip",
-      checksum: "702d56cc40b95c5ed65fa70d4df09a27eaa1ed3494e7395dba6d83a374e2fc38"
+      checksum: "ef82dbbac797635159759f4378645d256770cd000ec753bbc7d2e58a65186825"
     ),
     .binaryTarget(
       name: "_FirebaseAppCheck",
       url: "https://github.com/prnd-ios/firebase-ios-sdk-xcframeworks/releases/download/12.8.0/_FirebaseAppCheck.xcframework.zip",
-      checksum: "34d0be03e5d60a64e1f65aceebaee8ebb755c78912c5cfd0d0a5030381f8fdd5"
+      checksum: "fef4990ac011c04729312c6727c69f5240fab12cccf1461d99323da6deab4b94"
     ),
     .binaryTarget(
       name: "_FirebaseAppCheckInterop",
       url: "https://github.com/prnd-ios/firebase-ios-sdk-xcframeworks/releases/download/12.8.0/_FirebaseAppCheckInterop.xcframework.zip",
-      checksum: "f550216435579694c889536754d999c2bf1a0176a118042a27f2e4a43e78c1d1"
+      checksum: "31a79aa6990da551b966e49c754e55fb28f213a06d808fe4233bbce7dfd60ce8"
     ),
     .binaryTarget(
       name: "_FirebaseCore",
       url: "https://github.com/prnd-ios/firebase-ios-sdk-xcframeworks/releases/download/12.8.0/_FirebaseCore.xcframework.zip",
-      checksum: "b06b6d44eacd1bdd15221797fd2067625b53ca55a15f17e4f6eac9336ea8f4c2"
+      checksum: "0e5fef58c22d59f3c2ce0bcda2839aec9d6339a16f501c26e87f9bc8f09b047c"
     ),
     .binaryTarget(
       name: "_FirebaseCoreExtension",
       url: "https://github.com/prnd-ios/firebase-ios-sdk-xcframeworks/releases/download/12.8.0/_FirebaseCoreExtension.xcframework.zip",
-      checksum: "f8a2d49b5bb2f2e8e4aa2d9d27739d9d598a6b573cc64446202f0e0200c8411c"
+      checksum: "5301284d55032b2cf3d6813e530318a75ec8706ee3568dd471d04abedfd4dc42"
     ),
     .binaryTarget(
       name: "_FirebaseCoreInternal",
       url: "https://github.com/prnd-ios/firebase-ios-sdk-xcframeworks/releases/download/12.8.0/_FirebaseCoreInternal.xcframework.zip",
-      checksum: "c661b3565a4a3fd0b7cea974ed1840e620e4e71494c5a290a485e7f7ada5be3c"
+      checksum: "dceea1571db17f3f6c59d150f4e96d0007ab56b722aa043d5f55a436a29c7c82"
     ),
     .binaryTarget(
       name: "_FirebaseCrashlytics",
       url: "https://github.com/prnd-ios/firebase-ios-sdk-xcframeworks/releases/download/12.8.0/_FirebaseCrashlytics.xcframework.zip",
-      checksum: "5801178d0fd4cc0f8d3ad4d09c17f904389a1243ed218e7fff3dfc254849cc6a"
+      checksum: "3559d395917aef4d7838d2ba5c0eeb36ea7218b3e53c4c5f8fb25b7adcc64b94"
     ),
     .binaryTarget(
       name: "_FirebaseInstallations",
       url: "https://github.com/prnd-ios/firebase-ios-sdk-xcframeworks/releases/download/12.8.0/_FirebaseInstallations.xcframework.zip",
-      checksum: "568df7e8417899ce8e1c9a818c693b7116257dd219d90f30ee098001193cf3d3"
+      checksum: "63c7cf56d2031b21d3934b2db1f1ff6f51826ddff6e2ccfc5566d9fdbd71c4ed"
     ),
     .binaryTarget(
       name: "_FirebaseMessaging",
       url: "https://github.com/prnd-ios/firebase-ios-sdk-xcframeworks/releases/download/12.8.0/_FirebaseMessaging.xcframework.zip",
-      checksum: "87e54690491923b618622b53c7de02e7295223fe5cf7bbe9449662508fa26850"
+      checksum: "3c21f5ef8b5b94ca1d28ae6b36bc9f7cf3c51a5808f7f8ad37ecd2855e504b26"
     ),
     .binaryTarget(
       name: "_FirebasePerformance",
       url: "https://github.com/prnd-ios/firebase-ios-sdk-xcframeworks/releases/download/12.8.0/_FirebasePerformance.xcframework.zip",
-      checksum: "94a1d6d9d0f9bb5b8d485ec892f48cb31734dffc0c41978b5b979ae56217ba69"
+      checksum: "91d5612d48ef0b6644308287cdd44faecaad20e6f96bf0c97ecf9d410e7726e9"
     ),
     .binaryTarget(
       name: "_FirebaseRemoteConfig",
       url: "https://github.com/prnd-ios/firebase-ios-sdk-xcframeworks/releases/download/12.8.0/_FirebaseRemoteConfig.xcframework.zip",
-      checksum: "8f89dedbacb6fe9f444b23e6a1f2e306ac5deaf4410859b64879997df76d0b06"
+      checksum: "8b5a54261dc8847c7abcfdc91a405bead17271dbf5689d020ce4fe6e19d9aa60"
     ),
     .binaryTarget(
       name: "_FirebaseRemoteConfigInterop",
       url: "https://github.com/prnd-ios/firebase-ios-sdk-xcframeworks/releases/download/12.8.0/_FirebaseRemoteConfigInterop.xcframework.zip",
-      checksum: "b5e13cb7c33ada189781ae25a1f70d1f772190356a7dab0b6820f1127d7937d3"
+      checksum: "cbc1d00ab06c23b69d211779c5b2afc317ca0d8e0bf0f5758a2a0933ebc3a4d2"
     ),
     .binaryTarget(
       name: "_FirebaseSessions",
       url: "https://github.com/prnd-ios/firebase-ios-sdk-xcframeworks/releases/download/12.8.0/_FirebaseSessions.xcframework.zip",
-      checksum: "7c8b5a14cec1bbb38acbd03bf3b028f74e9a47cefa339e683748ba10c5cad5c1"
+      checksum: "dc201d16a0e6ff3bb4d5798eebe0b94779b771b73e76c3c8fac8e030eaaee659"
     ),
     .binaryTarget(
       name: "_FirebaseSharedSwift",
       url: "https://github.com/prnd-ios/firebase-ios-sdk-xcframeworks/releases/download/12.8.0/_FirebaseSharedSwift.xcframework.zip",
-      checksum: "cd74231718888758d724a67dad8b7c81f1f3065e94f0bb5b9f046a16f68076d9"
+      checksum: "3d9a4b4db7447bb26690262c7708d0e0d99ef882bd0e5275e54de79e07b188cb"
     ),
     .binaryTarget(
       name: "_GoogleAdsOnDeviceConversion",
       url: "https://github.com/prnd-ios/firebase-ios-sdk-xcframeworks/releases/download/12.8.0/_GoogleAdsOnDeviceConversion.xcframework.zip",
-      checksum: "dbaa35e2e52aeafc7613e1dae93ad6f6e7e50c40031fd4ee5ee8eb38a5729704"
+      checksum: "9435b71da9d1f8cb75c93698c6717642d1a03c150842e60904ecde46735d71d1"
     ),
     .binaryTarget(
       name: "_GoogleAppMeasurement",
       url: "https://github.com/prnd-ios/firebase-ios-sdk-xcframeworks/releases/download/12.8.0/_GoogleAppMeasurement.xcframework.zip",
-      checksum: "51e0e7a550a3f806a75935b4c81e1d879f6b99d07d60acf9868f7c353a9245a1"
+      checksum: "c5f2bc179ec7dc81fc7e9495896a27a10eec25ffe12d3fa40463676f81a56584"
     ),
     .binaryTarget(
       name: "_GoogleAppMeasurementIdentitySupport",
       url: "https://github.com/prnd-ios/firebase-ios-sdk-xcframeworks/releases/download/12.8.0/_GoogleAppMeasurementIdentitySupport.xcframework.zip",
-      checksum: "a7403c377da1f44a43b7b762d559808a90a636656aa03d038a5f9fc54b4d58ce"
+      checksum: "63d4406e4fb4d7ac57ae355e8aa442ec4f51b1163b62eabba3b5810014d42aeb"
     ),
     .binaryTarget(
       name: "_GoogleDataTransport",
       url: "https://github.com/prnd-ios/firebase-ios-sdk-xcframeworks/releases/download/12.8.0/_GoogleDataTransport.xcframework.zip",
-      checksum: "02e2a02e3e8ea0a6e550d877a4c7f956f26da0129ea0fed85aa586da33ad0300"
+      checksum: "0a73ab26e8df47b420003e09035c6894fc86a4baaa4c985cd4059d88b351cce0"
     ),
     .binaryTarget(
       name: "_GoogleUtilities",
       url: "https://github.com/prnd-ios/firebase-ios-sdk-xcframeworks/releases/download/12.8.0/_GoogleUtilities.xcframework.zip",
-      checksum: "ce957bb8e8aa5fa5de77636b3e51ae77a3fb9224e0216c41b151a06adfe428db"
-    ),
-    .binaryTarget(
-      name: "_Promises",
-      url: "https://github.com/prnd-ios/firebase-ios-sdk-xcframeworks/releases/download/12.8.0/_Promises.xcframework.zip",
-      checksum: "8f16d15146429ab1139ba122d49a3c934c8b597f292f913e8045c8fbfe39ffa2"
+      checksum: "803739974f0e4cf730150237606a11694b2c70cc7942a78bc1ffa57ecde50141"
     ),
     .binaryTarget(
       name: "_nanopb",
       url: "https://github.com/prnd-ios/firebase-ios-sdk-xcframeworks/releases/download/12.8.0/_nanopb.xcframework.zip",
-      checksum: "043f88fb5696aa4f35d4bd9a3c590d8f53568225e56a8fff871fc8b54de41639"
+      checksum: "0908b89d1cb4cb63131f134e84b147c936c0e58b2d614b02b14644f07d8117f5"
+    ),
+    .binaryTarget(
+      name: "_Promises",
+      url: "https://github.com/prnd-ios/firebase-ios-sdk-xcframeworks/releases/download/12.8.0/_Promises.xcframework.zip",
+      checksum: "ff37d987e03cce9ba3c7c7ea2e57463495700c3c8af39ec4dccfbebae1be4e79"
     )
   ]
 )
